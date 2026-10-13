@@ -321,7 +321,7 @@ class CameraShareHub(
             if (ensureStarted() != null) return
             // The keyframe request is a pipeline callout like any other, so it goes under the camera
             // mutex (restartForLensChange does the same): MediaCodec.setParameters() overlapping the
-            // codec.stop()/release() of a linger, a shutdown or a lens change is an
+            // codec.release() of a linger, a shutdown or a lens change is an
             // IllegalStateException at best and a native abort at worst -- which no runCatching sees.
             if (!acquireCamera()) return
             var attached = false
@@ -461,7 +461,7 @@ class CameraShareHub(
      *  open -- that thread is handed the stop and runs it before releasing. When the camera mutex
      *  IS free, this thread runs the stop itself, but that costs it nothing either:
      *  `CameraCapturePipeline.stop()` only detaches the rig and hands the actual session/device
-     *  close and `codec.stop()`/`release()` to a release worker, so the main thread is never the
+     *  close and `codec.release()` to a release worker, so the main thread is never the
      *  one paying for a camera close. */
     fun shutdown() {
         var stop = false

@@ -134,7 +134,7 @@ class CameraCapturePipeline(context: Context) : CapturePipeline {
 
     /**
      * Every teardown runs here, whoever asked for it. `CameraDevice.close()` +
-     * `MediaCodec.stop()`/`release()` cost tens to hundreds of milliseconds and both of the threads
+     * `MediaCodec.release()` cost tens to hundreds of milliseconds and both of the threads
      * that ask for one must not pay it: the main thread (the hub's linger and its shutdown both run
      * on the main Handler — an ANR on a slow device) and [thread] itself, where `release()` from
      * inside a MediaCodec callback is a documented deadlock and where the hub re-enters [stop] from
@@ -909,7 +909,7 @@ class CameraCapturePipeline(context: Context) : CapturePipeline {
  *
  * It is a [ReentrantLock] rather than a monitor for one reason: every USE takes it with a BOUNDED
  * `tryLock` and gives up rather than queue. [release] is the only long holder (a camera close and
- * a `codec.stop()`/`release()`), and some of the users are the camera callback thread itself — so
+ * a `codec.release()`), and some of the users are the camera callback thread itself — so
  * an unbounded wait would park that thread behind a teardown that may be waiting on it. A use that
  * loses the race has the right answer anyway: the rig is going away.
  *
@@ -1004,7 +1004,12 @@ private class Rig(
             session = null
             runCatching { camera?.close() }
             camera = null
-            runCatching { codec.stop() }
+            // release() straight from Executing, NEVER stop() first. On Android 11 an encoder error
+            // that lands while stop() is STOPPING answers stop() and leaves the codec in STOPPING;
+            // the release() after it then aborts the whole process inside libstagefright
+            // ("mReplyID == null, from kWhatRelease:STOPPING following kWhatError:STOPPING") — no
+            // runCatching sees that. The Echo Show encoder does exactly this when the camera feeding
+            // its input surface has just closed. release() ignores an error while RELEASING.
             runCatching { codec.release() }
             runCatching { inputSurface.release() }
             runCatching { jpegReader.setOnImageAvailableListener(null, null) }
