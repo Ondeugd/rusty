@@ -7,6 +7,13 @@ All notable changes to Rusty are documented here. The format follows
 The section matching each release tag is published as that release's notes and is
 what the app shows under **About & updates → What's new**.
 
+## [2.8.1] - 2026-10-14
+
+### Fixed
+- Fixed a bug where Rusty could crash when its shared camera turned off:
+  after the last viewer left, after a snapshot, or when sharing was switched
+  off.
+
 ## [2.8.0] - 2026-09-29
 
 ### Added

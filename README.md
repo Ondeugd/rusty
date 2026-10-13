@@ -119,10 +119,10 @@ https://github.com/user-attachments/assets/973e78b3-98b2-4a9f-96a5-fc913f78ac96
 ## Install
 
 1. Go to the [**Releases**](https://github.com/SerafiniJose/rusty/releases/latest) page.
-2. Download the `.apk` for the latest release (e.g. `rusty-v2.8.0.apk`).
+2. Download the `.apk` for the latest release (e.g. `rusty-v2.8.1.apk`).
 3. Sideload it onto your device:
    ```bash
-   adb install -r rusty-v2.8.0.apk
+   adb install -r rusty-v2.8.1.apk
    ```
    (Or enable "Install unknown apps" and open the APK directly on the device.)
 4. Launch the app — it begins advertising as a Connect target right away.
