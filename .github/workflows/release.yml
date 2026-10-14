@@ -5,6 +5,7 @@ name: Release
 # This builds the APK and publishes it as a GitHub Release with the APK attached.
 
 on:
+  workflow_dispatch: # adds manual build start button on github
   push:
     tags:
       - 'v*'
